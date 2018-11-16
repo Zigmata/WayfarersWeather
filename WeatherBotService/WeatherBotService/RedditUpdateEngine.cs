@@ -59,9 +59,6 @@ namespace WeatherBotService
             var response = await Client.PostAsync("https://www.reddit.com/api/v1/access_token", content);
             var responseString = await response.Content.ReadAsStringAsync();
             var convertedString = JsonConvert.SerializeObject(responseString);
-
-
-            var reddit = new Reddit();
         }
     }
 }
