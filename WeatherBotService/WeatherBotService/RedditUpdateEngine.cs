@@ -26,6 +26,8 @@ namespace WeatherBotService
         {
             _refreshToken = refreshToken;
             _encodedAccountCredentials = Base64Encode(accountCredentials);
+
+            GetNewAccessToken();
         }
 
         internal void PostUpdate(WeatherPattern weather, DateTime dateTime)
@@ -44,7 +46,7 @@ namespace WeatherBotService
             return Convert.ToBase64String(plainTextBytes);
         }
 
-        internal async void GetNewAccessToken()
+        private async void GetNewAccessToken()
         {
             var values = new Dictionary<string, string>
             {

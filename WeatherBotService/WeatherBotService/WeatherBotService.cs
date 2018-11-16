@@ -10,7 +10,8 @@ namespace WeatherBotService
     {
         private readonly Timer _timer;
         private const string LogFile = @"C:\WayfarersWeather\log.txt";
-        public int HoursSinceWeatherChange { get; set; }
+        public DateTime TimeOfLastWeatherChange { get; set; }
+        private static readonly RedditUpdateEngine UpdateEngine = new RedditUpdateEngine();
 
         public WeatherBotService()
         {
@@ -33,16 +34,20 @@ namespace WeatherBotService
             Log("Timer Elapsed");
 
             // Reset timer
-            if ((int)_timer.Interval != 60 * 60 * 1000)
+            if ((int)_timer.Interval != 60 * 1000)
                 _timer.Interval = 60 * 1000;
 
-            if (HoursSinceWeatherChange > 8)
+            if ((DateTime.UtcNow.Hour - TimeOfLastWeatherChange.Hour) >= 8)
             {
+                Log("Weather Updated");
+
+                TimeOfLastWeatherChange = DateTime.UtcNow;
+
                 var weather = new WeatherPattern();
 
                 // Some more stuff with building the update.
 
-                var updateEngine = new RedditUpdateEngine();
+                UpdateEngine.PostUpdate(weather, DateTime.UtcNow);
             }
         }
 
