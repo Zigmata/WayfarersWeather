@@ -59,29 +59,4 @@ namespace WeatherBotService
             }
         }
     }
-
-    public class RedditUpdateEngine
-    {
-        private static readonly string AuthToken = "";
-        public WeatherPattern CurrentWeather { get; set; }
-        public DateTime CurrentDate { get; set; }
-        public DateTime CurrentTime { get; set; }
-        public Season CurrentSeason { get; set; }
-        public Phase CurrentPhase { get; set; }
-
-        public RedditUpdateEngine()
-        {
-            
-        }
-
-        internal void PostUpdate(WeatherPattern weather)
-        {
-
-        }
-
-        internal void GetPostContent()
-        {
-
-        }
-    }
 }

@@ -59,6 +59,7 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
+    <Compile Include="RedditUpdateEngine.cs" />
     <Compile Include="Season.cs" />
     <Compile Include="WeatherBotService.cs">
       <SubType>Component</SubType>
