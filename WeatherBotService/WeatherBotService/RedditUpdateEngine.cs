@@ -15,6 +15,7 @@ namespace WeatherBotService
         private readonly string _refreshToken;
         private static readonly HttpClient Client = new HttpClient();
         private readonly string _encodedAccountCredentials;
+        private readonly Reddit _reddit;
 
         public WeatherPattern CurrentWeather { get; set; }
         public DateTime CurrentDate { get; set; }
