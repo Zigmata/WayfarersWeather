@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.ServiceProcess;
 using System.Timers;
+using Newtonsoft.Json.Linq;
 using Timer = System.Timers.Timer;
 
 namespace WeatherBotService
@@ -10,8 +12,9 @@ namespace WeatherBotService
     {
         private readonly Timer _timer;
         private const string LogFile = @"C:\WayfarersWeather\log.txt";
-        public DateTime TimeOfLastWeatherChange { get; set; }
-        private static readonly RedditUpdateEngine UpdateEngine = new RedditUpdateEngine();
+        private DateTime TimeOfLastWeatherChange { get; set; }
+        private DateTime TimeOfLastToken { get; set; }
+        private static RedditUpdateEngine _updateEngine;
 
         public WeatherBotService()
         {
@@ -19,6 +22,19 @@ namespace WeatherBotService
 
             new FileInfo(LogFile).Directory?.Create();
             _timer = new Timer();
+
+            using (var file = File.OpenText("config.txt"))
+            {
+                using (var reader = new JsonTextReader(file))
+                {
+                    var credentials = (JObject) JToken.ReadFrom(reader);
+
+                    _updateEngine = new RedditUpdateEngine((string) credentials["account"], (string) credentials["token"]);
+                }
+            }
+
+            TimeOfLastWeatherChange = DateTime.MinValue;
+            TimeOfLastToken = DateTime.MinValue;
         }
 
         protected override void OnStart(string[] args)
@@ -37,7 +53,12 @@ namespace WeatherBotService
             if ((int)_timer.Interval != 60 * 1000)
                 _timer.Interval = 60 * 1000;
 
-            if ((DateTime.UtcNow.Hour - TimeOfLastWeatherChange.Hour) >= 8)
+            if (DateTime.UtcNow.Hour - TimeOfLastToken.Hour >= 1)
+            {
+                _updateEngine.GetNewAccessToken();
+            }
+
+            if (DateTime.UtcNow.Hour - TimeOfLastWeatherChange.Hour >= 8)
             {
                 Log("Weather Updated");
 
@@ -47,7 +68,7 @@ namespace WeatherBotService
 
                 // Some more stuff with building the update.
 
-                UpdateEngine.PostUpdate(weather, DateTime.UtcNow);
+                _updateEngine.PostUpdate(weather, DateTime.UtcNow);
             }
         }
 

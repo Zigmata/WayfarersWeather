@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RedditSharp;
 using RedditSharp.Things;
 
@@ -47,7 +48,7 @@ namespace WeatherBotService
             return Convert.ToBase64String(plainTextBytes);
         }
 
-        private async void GetNewAccessToken()
+        public async void GetNewAccessToken()
         {
             var values = new Dictionary<string, string>
             {
@@ -61,7 +62,8 @@ namespace WeatherBotService
 
             var response = await Client.PostAsync("https://www.reddit.com/api/v1/access_token", content);
             var responseString = await response.Content.ReadAsStringAsync();
-            var convertedString = JsonConvert.SerializeObject(responseString);
+            var responseObject = JObject.Parse(responseString);
+            _bearerToken = (string) responseObject["access_token"];
         }
     }
 }
