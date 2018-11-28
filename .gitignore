@@ -331,5 +331,5 @@ ASALocalRun/
 
 #Project Specific
 
-#credentials file
-config.txt
+#settings file
+settings.txt

@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.ServiceProcess;
+using System.Text;
 using System.Timers;
 using Newtonsoft.Json.Linq;
 using Timer = System.Timers.Timer;
@@ -11,7 +12,7 @@ namespace WeatherBotService
     public partial class WeatherBotService : ServiceBase
     {
         private readonly Timer _timer;
-        private const string LogFile = @"C:\WayfarersWeather\log.txt";
+        private static readonly LogBuilder Log = new LogBuilder(@"C:\WayfarersWeather\log.txt");
         private DateTime TimeOfLastWeatherChange { get; set; }
         private DateTime TimeOfLastToken { get; set; }
         private static RedditUpdateEngine _updateEngine;
@@ -20,16 +21,17 @@ namespace WeatherBotService
         {
             InitializeComponent();
 
-            new FileInfo(LogFile).Directory?.Create();
             _timer = new Timer();
 
-            using (var file = File.OpenText("config.txt"))
+            using (var file = File.OpenText("settings.txt"))
             {
                 using (var reader = new JsonTextReader(file))
                 {
-                    var credentials = (JObject) JToken.ReadFrom(reader);
+                    var settings = (JObject) JToken.ReadFrom(reader);
 
-                    _updateEngine = new RedditUpdateEngine((string) credentials["account"], (string) credentials["token"]);
+                    _updateEngine = new RedditUpdateEngine(
+                        (string) settings["user"], (string) settings["password"],
+                        (string) settings["refresh_token"], (string) settings["thread_uri"]);
                 }
             }
 
@@ -39,7 +41,7 @@ namespace WeatherBotService
 
         protected override void OnStart(string[] args)
         {
-            Log("Service started.");
+            Log.Write("Service started.");
             _timer.Enabled = true;
             _timer.Interval = 60 * 1000; // Triggers after one minute
             _timer.Elapsed += OnElapsedTime;
@@ -47,42 +49,48 @@ namespace WeatherBotService
 
         private void OnElapsedTime(object sender, ElapsedEventArgs e)
         {
-            Log("Timer Elapsed");
-
             // Reset timer
             if ((int)_timer.Interval != 60 * 1000)
                 _timer.Interval = 60 * 1000;
 
             if (DateTime.UtcNow.Hour - TimeOfLastToken.Hour >= 1)
             {
+                Log.Write("Refreshing bearer token.");
                 _updateEngine.GetNewAccessToken();
             }
 
             if (DateTime.UtcNow.Hour - TimeOfLastWeatherChange.Hour >= 8)
             {
-                Log("Weather Updated");
+                Log.Write("Weather Updated");
 
                 TimeOfLastWeatherChange = DateTime.UtcNow;
 
-                var weather = new WeatherPattern();
+                var weather = new WeatherGenerator();
 
-                // Some more stuff with building the update.
+                var updateString = BuildPostString(weather.Effect);
 
-                _updateEngine.PostUpdate(weather, DateTime.UtcNow);
+                _updateEngine.PostUpdate(updateString);
+            }
+            else
+            {
+                // Pull current status and update time only.
             }
         }
 
         protected override void OnStop()
         {
-            Log("Service stopped.");
+            Log.Write("Service stopped.");
         }
 
-        private static void Log(string logMessage)
+        private static string BuildPostString(string weatherPattern)
         {
-            using (TextWriter w = File.AppendText(LogFile))
-            {
-                w.Write($"\r\n{DateTime.UtcNow} : {logMessage}");
-            }
+            var date = DateTime.UtcNow.ToString("f");
+            var postContent = new StringBuilder();
+            postContent.AppendFormat($"*{date}*\r\n");
+            postContent.AppendFormat("\r\n");
+            postContent.AppendFormat(weatherPattern);
+
+            return postContent.ToString();
         }
     }
 }

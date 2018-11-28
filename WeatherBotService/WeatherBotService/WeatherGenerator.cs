@@ -2,21 +2,18 @@
 
 namespace WeatherBotService
 {
-    public class WeatherPattern
+    public class WeatherGenerator
     {
-        public WeatherPattern()
+        public WeatherGenerator()
         {
-            Phase = GetPhase(DateTime);
-            Season = GetSeason(DateTime);
-            WeatherEffect = GenerateWeather(Season);
+            var phase = GetPhase(DateTime.UtcNow);
+            var season = GetSeason(DateTime.UtcNow);
+            Effect = GenerateWeather(phase, season);
         }
 
         // private readonly Random _random;
 
-        public Season Season { get; }
-        public DateTime DateTime = DateTime.UtcNow;
-        public Phase Phase { get; }
-        public string WeatherEffect { get; }
+        public string Effect { get; }
 
         private Phase GetPhase(DateTime dateTime)
         {
@@ -49,7 +46,7 @@ namespace WeatherBotService
             throw new ArgumentOutOfRangeException(nameof(day), day, @"Incorrect date reported.");
         }
 
-        private string GenerateWeather(Season season)
+        private string GenerateWeather(Phase phase, Season season)
         {
             switch (season)
             {
