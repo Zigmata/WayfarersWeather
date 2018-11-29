@@ -9,11 +9,17 @@ namespace WeatherBotService
 {
     public class RedditUpdateEngine
     {
+        /// <summary>Bearer token for API access.</summary>
         private string _bearerToken;
+        /// <summary>Refresh token used to obtain new bearer token.</summary>
         private readonly string _refreshToken;
+        /// <summary>Reddit application ID.</summary>
         private readonly string _userName;
+        /// <summary>Reddit application secret.</summary>
         private readonly string _password;
+        /// <summary>REST client used to send POST requests to the API.</summary>
         private static readonly RestClient Client = new RestClient();
+        /// <summary>The URL for the thread that will be edited.</summary>
         private static Uri _threadUri;
 
         /// <summary>
@@ -57,7 +63,14 @@ namespace WeatherBotService
 
             // Grab the post from settings.txt, and update the content.
             var post = reddit.GetPost(_threadUri);
-            post.EditText(content);
+            try
+            {
+                post.EditText(content);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("An error occurred while posting to Reddit,", e);
+            }
 
             return true;
         }

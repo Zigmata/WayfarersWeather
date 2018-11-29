@@ -60,7 +60,7 @@ namespace WeatherBotService
                 _timer.Interval = 60 * 1000;
 
             // If the last token was acquired an hour or more ago, get a new token.
-            if (DateTime.UtcNow.Hour - _timeOfLastToken.Hour >= 1)
+            if ((DateTime.UtcNow - _timeOfLastToken).Hours >= 1)
             {
                 Log.Write("Refreshing bearer token.");
                 _timeOfLastToken = DateTime.UtcNow;
@@ -76,7 +76,7 @@ namespace WeatherBotService
             }
 
             // If the weather hasn't been changed in four hours, generate a new pattern and store it in _currentWeather.
-            if (DateTime.UtcNow.Hour - _timeOfLastWeatherChange.Hour >= 4)
+            if ((DateTime.UtcNow - _timeOfLastWeatherChange).Hours >= 4)
             {
                 Log.Write("Weather Updated");
                 _timeOfLastWeatherChange = DateTime.UtcNow;
