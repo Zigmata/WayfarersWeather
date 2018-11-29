@@ -12,18 +12,21 @@ namespace WeatherBotService
     public partial class WeatherBotService : ServiceBase
     {
         private readonly Timer _timer;
-        private static readonly LogBuilder Log = new LogBuilder(@"C:\WayfarersWeather\log.txt");
-        private DateTime TimeOfLastWeatherChange { get; set; }
-        private DateTime TimeOfLastToken { get; set; }
+        private static readonly LogBuilder Log = new LogBuilder(@"C:\WayfarersWeather\Logs\serviceLog.txt");
+        private DateTime _timeOfLastWeatherChange;
+        private DateTime _timeOfLastToken;
         private static RedditUpdateEngine _updateEngine;
+        private WeatherGenerator _currentWeather;
 
         public WeatherBotService()
         {
             InitializeComponent();
 
+            // Initialize the timer
             _timer = new Timer();
 
-            using (var file = File.OpenText("settings.txt"))
+            // Read JSON from settings file and instantiate the RedditUpdateEngine
+            using (var file = File.OpenText(@"C:\WayfarersWeather\settings.txt"))
             {
                 using (var reader = new JsonTextReader(file))
                 {
@@ -35,12 +38,15 @@ namespace WeatherBotService
                 }
             }
 
-            TimeOfLastWeatherChange = DateTime.MinValue;
-            TimeOfLastToken = DateTime.MinValue;
+            // Initialize the time fields to their minimums.
+            _timeOfLastWeatherChange = DateTime.MinValue;
+            _timeOfLastToken = DateTime.MinValue;
         }
 
         protected override void OnStart(string[] args)
         {
+            System.Diagnostics.Debugger.Launch();
+
             Log.Write("Service started.");
             _timer.Enabled = true;
             _timer.Interval = 60 * 1000; // Triggers after one minute
@@ -53,27 +59,41 @@ namespace WeatherBotService
             if ((int)_timer.Interval != 60 * 1000)
                 _timer.Interval = 60 * 1000;
 
-            if (DateTime.UtcNow.Hour - TimeOfLastToken.Hour >= 1)
+            // If the last token was acquired an hour or more ago, get a new token.
+            if (DateTime.UtcNow.Hour - _timeOfLastToken.Hour >= 1)
             {
                 Log.Write("Refreshing bearer token.");
-                _updateEngine.GetNewAccessToken();
+                _timeOfLastToken = DateTime.UtcNow;
+
+                try
+                {
+                    _updateEngine.GetNewAccessToken();
+                }
+                catch (Exception exception)
+                {
+                    Log.Write($"Error acquiring access token: {exception.Message}");
+                }
             }
 
-            if (DateTime.UtcNow.Hour - TimeOfLastWeatherChange.Hour >= 8)
+            // If the weather hasn't been changed in four hours, generate a new pattern and store it in _currentWeather.
+            if (DateTime.UtcNow.Hour - _timeOfLastWeatherChange.Hour >= 4)
             {
                 Log.Write("Weather Updated");
+                _timeOfLastWeatherChange = DateTime.UtcNow;
 
-                TimeOfLastWeatherChange = DateTime.UtcNow;
+                _currentWeather = new WeatherGenerator();
+            }
 
-                var weather = new WeatherGenerator();
+            // Log the current time, and post an update with _currentWeather.
+            var updateString = BuildPostString(_currentWeather.Effect);
 
-                var updateString = BuildPostString(weather.Effect);
-
+            try
+            {
                 _updateEngine.PostUpdate(updateString);
             }
-            else
+            catch (Exception exception)
             {
-                // Pull current status and update time only.
+                Log.Write($"An error occurred while posting the update: {exception.Message}");
             }
         }
 

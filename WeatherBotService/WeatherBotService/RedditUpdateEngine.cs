@@ -31,8 +31,15 @@ namespace WeatherBotService
             _threadUri = new Uri(threadUri);
 
             // Repeat access token request until valid token is gained.
-            while (!GetNewAccessToken())
-                GetNewAccessToken();
+            try
+            {
+                while (!GetNewAccessToken())
+                    GetNewAccessToken();
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("An error occurred while retrieving the bearer token.", e);
+            }
         }
 
         /// <summary>

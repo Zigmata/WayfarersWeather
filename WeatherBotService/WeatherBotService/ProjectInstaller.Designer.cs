@@ -42,7 +42,6 @@
             this.serviceInstaller1.Description = "Service for Wayfarers Pub Weather Bot";
             this.serviceInstaller1.DisplayName = "Wayfarers Weather Bot";
             this.serviceInstaller1.ServiceName = "WayfarerWeatherBotService";
-            this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
