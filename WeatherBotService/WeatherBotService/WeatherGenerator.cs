@@ -19,13 +19,13 @@ namespace WeatherBotService
         {
             var hour = dateTime.Hour;
 
-            if (hour < 6 || hour > 20)
+            if (hour < 7 || hour > 21)
                 return Phase.Night;
-            if (hour == 6)
+            if (hour == 7)
                 return Phase.Dawn;
-            if (hour > 6 && hour < 20)
+            if (hour > 7 && hour < 21)
                 return Phase.Day;
-            if (hour == 20)
+            if (hour == 21)
                 return Phase.Dusk;
             throw new ArgumentOutOfRangeException(nameof(hour), hour, @"Incorrect time reported.");
         }

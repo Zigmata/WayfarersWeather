@@ -38,7 +38,7 @@ namespace WeatherBotService
                 }
             }
 
-            // Initialize the time fields to their minimums.
+            // Initialize the DateTime fields to their minimums.
             _timeOfLastWeatherChange = DateTime.MinValue;
             _timeOfLastToken = DateTime.MinValue;
         }
