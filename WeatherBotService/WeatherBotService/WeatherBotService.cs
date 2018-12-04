@@ -41,6 +41,7 @@ namespace WeatherBotService
             // Initialize the DateTime fields to their minimums.
             _timeOfLastWeatherChange = DateTime.MinValue;
             _timeOfLastToken = DateTime.MinValue;
+            _currentWeather = new WeatherGenerator();
         }
 
         protected override void OnStart(string[] args)

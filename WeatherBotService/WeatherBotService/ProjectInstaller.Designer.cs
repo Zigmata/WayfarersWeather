@@ -1,6 +1,6 @@
 ﻿namespace WeatherBotService
 {
-    abstract partial class ProjectInstaller
+    partial class ProjectInstaller
     {
         /// <summary>
         /// Required designer variable.
@@ -39,9 +39,9 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "Service for Wayfarers Pub Weather Bot";
-            this.serviceInstaller1.DisplayName = "Wayfarers Weather Bot";
-            this.serviceInstaller1.ServiceName = "WayfarerWeatherBotService";
+            this.serviceInstaller1.Description = "Weather Bot for Wayfarer\'s Pub";
+            this.serviceInstaller1.DisplayName = "Wayfarer\'s Weather Bot";
+            this.serviceInstaller1.ServiceName = "WayfarersWeatherService";
             // 
             // ProjectInstaller
             // 
