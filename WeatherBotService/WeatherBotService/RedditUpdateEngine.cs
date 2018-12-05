@@ -7,6 +7,9 @@ using RestSharp.Authenticators;
 
 namespace WeatherBotService
 {
+    /// <summary>
+    /// Base class for managing interactions with Reddit's REST API.
+    /// </summary>
     public class RedditUpdateEngine
     {
         /// <summary>Bearer token for API access.</summary>
@@ -52,6 +55,7 @@ namespace WeatherBotService
         /// Edits the thread designated in the "thread_uri" field from settings.txt.
         /// </summary>
         /// <param name="content">New text to post.</param>
+        /// <returns>Returns <c>true</c> when the post is successfully updated.</returns>
         internal bool PostUpdate(string content)
         {
             // Init Reddit class with bearer token.
