@@ -12,3 +12,7 @@ Eventually, WeatherBot will be updated with a GUI configuration tool, and curren
 
 ## Can I Contribute?
 Right now, collaboration is limited to approved members of the WayfarersPub. But feel free to clone the repo and make your own modifications! You will need to know a bit about the Reddit Application process, and JSON formatting, to utilize the code as-is for your own bot.
+
+## Known Issues:
+- Timer seems to drift a fraction of a second over time.
+- Updates are posted successfully, but log file still receives 401: Unauthorized replies from Reddit API. Possibly related to timer drift.
