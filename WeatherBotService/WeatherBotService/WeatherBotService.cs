@@ -46,7 +46,7 @@ namespace WeatherBotService
                 Log.Write(e.InnerException?.Message);
                 Log.Write(e.TargetSite.Name);
                 Log.Write(e.StackTrace);
-                ExitCode = 13816;
+                ExitCode = 1;
                 Stop();
                 throw;
             }
@@ -63,6 +63,7 @@ namespace WeatherBotService
             // Initialize the timer
             _timer = new Timer {Interval = 60 * 1000}; // Triggers after one minute.
             _timer.Elapsed += TimerElapsed;
+            _timer.AutoReset = true;
             _timer.Enabled = true;
 
             // Read JSON from settings file and initialize _updateEngine.
@@ -82,14 +83,26 @@ namespace WeatherBotService
             _timeOfLastWeatherChange = DateTime.UtcNow;
             _timeOfLastToken = DateTime.UtcNow;
 
+            // Initialize the bearer token in _updateEngine
+            Log.Write("Initializing bearer token.");
+            _updateEngine.GetNewAccessToken();
+
             // Initialize the weather field.
             Log.Write("Initializing weather pattern.");
             _currentWeather = new WeatherGenerator();
             _currentWeather.GenerateWeather();
 
-            // Initialize the bearer token in _updateEngine
-            Log.Write("Initializing bearer token.");
-            _updateEngine.GetNewAccessToken();
+            // Perform initial post.
+            var updateString = BuildPostContent(_currentWeather.Effect);
+            try
+            {
+                Log.Write("Initializing thread.");
+                _updateEngine.PostUpdate(updateString);
+            }
+            catch (Exception e)
+            {
+                Log.Write($"An error occurred while sending the initialization post: {e.Message}");
+            }
         }
 
         // Actions to take when _timer elapses
@@ -100,10 +113,6 @@ namespace WeatherBotService
         /// <param name="e">Additional arguments from the raised event.</param>
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            // Reset timer
-            if ((int)_timer.Interval != 60 * 1000)
-                _timer.Interval = 60 * 1000;
-
             // If the last bearer token was acquired an hour or more ago, get a new token.
             if ((int)(DateTime.UtcNow - _timeOfLastToken).TotalHours >= 1)
             {
@@ -143,6 +152,7 @@ namespace WeatherBotService
             var updateString = BuildPostContent(_currentWeather.Effect);
             try
             {
+                Log.Write("Posting update.");
                 _updateEngine.PostUpdate(updateString);
             }
             catch (Exception exception)

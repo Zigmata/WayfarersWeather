@@ -60,6 +60,7 @@ namespace WeatherBotService
         {
             // Init Reddit class with bearer token.
             var reddit = new Reddit(_bearerToken);
+            reddit.InitOrUpdateUser();
 
             // Verify user is authenticated and valid.
             if (reddit.User == null)
