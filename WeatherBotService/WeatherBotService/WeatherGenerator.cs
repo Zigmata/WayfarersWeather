@@ -105,42 +105,34 @@ namespace WeatherBotService
             if (seasonRoll >= 1 && seasonRoll <= 25) // 25% chance of generic weather with regards to season
             {
                 JArray array;
-                string selection;
 
                 if (timeRoll >= 1 && timeRoll <= 25) // 25% chance of generic weather with regards to time of day
                 {
-                    // First create an array out of the JSON string for the appropriate season/phase.
-                    array = new JArray(_weatherSet["any_season"]["any_time"]);
+                    // Create an array out of the JSON string for the appropriate season/phase.
+                    array = (JArray) _weatherSet["any_season"]["any_time"];
 
-                    // Next, select a random entry from the array and convert that JToken to a string.
-                    selection = array[random.Next(0, array.Count)].ToString();
-
-                    // Finally, trim the brackets, quotes, and whitespace from the string and set it to Effect.
-                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                    // Select a random entry from the array, convert that JToken to a string, and set it as the current Effect.
+                    Effect = array[random.Next(0, array.Count)].ToString();
                 }
                 else
                 {
                     switch (phase)
                     {
                         case Phase.Dawn:
-                            array = new JArray(_weatherSet["any_season"]["dawn"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["any_season"]["dawn"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                             break;
                         case Phase.Day:
-                            array = new JArray(_weatherSet["any_season"]["day"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["any_season"]["day"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                             break;
                         case Phase.Dusk:
-                            array = new JArray(_weatherSet["any_season"]["dusk"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["any_season"]["dusk"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                             break;
                         case Phase.Night:
-                            array = new JArray(_weatherSet["any_season"]["night"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["any_season"]["night"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(phase), phase, null);
@@ -150,40 +142,34 @@ namespace WeatherBotService
             else
             {
                 JArray array;
-                string selection;
 
                 switch (season)
                 {
                     case Season.Winter:
                         if (timeRoll >= 1 && timeRoll <= 20)
                         {
-                            array = new JArray(_weatherSet["winter"]["any_time"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["winter"]["any_time"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                         }
                         else
                         {
                             switch (phase)
                             {
                                 case Phase.Dawn:
-                                    array = new JArray(_weatherSet["winter"]["dawn"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["winter"]["dawn"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Day:
-                                    array = new JArray(_weatherSet["winter"]["day"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["winter"]["day"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Dusk:
-                                    array = new JArray(_weatherSet["winter"]["dusk"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["winter"]["dusk"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Night:
-                                    array = new JArray(_weatherSet["winter"]["night"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["winter"]["night"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(phase), phase, null);
@@ -194,33 +180,28 @@ namespace WeatherBotService
                     case Season.Spring:
                         if (timeRoll >= 1 && timeRoll <= 20)
                         {
-                            array = new JArray(_weatherSet["spring"]["any_time"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["spring"]["any_time"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                         }
                         else
                         {
                             switch (phase)
                             {
                                 case Phase.Dawn:
-                                    array = new JArray(_weatherSet["spring"]["dawn"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["spring"]["dawn"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Day:
-                                    array = new JArray(_weatherSet["spring"]["day"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["spring"]["day"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Dusk:
-                                    array = new JArray(_weatherSet["spring"]["dusk"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["spring"]["dusk"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Night:
-                                    array = new JArray(_weatherSet["spring"]["night"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["spring"]["night"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(phase), phase, null);
@@ -231,33 +212,28 @@ namespace WeatherBotService
                     case Season.Summer:
                         if (timeRoll >= 1 && timeRoll <= 20)
                         {
-                            array = new JArray(_weatherSet["summer"]["any_time"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["summer"]["any_time"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                         }
                         else
                         {
                             switch (phase)
                             {
                                 case Phase.Dawn:
-                                    array = new JArray(_weatherSet["summer"]["dawn"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["summer"]["dawn"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Day:
-                                    array = new JArray(_weatherSet["summer"]["day"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["summer"]["day"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Dusk:
-                                    array = new JArray(_weatherSet["summer"]["dusk"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["summer"]["dusk"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Night:
-                                    array = new JArray(_weatherSet["summer"]["night"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["summer"]["night"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(phase), phase, null);
@@ -268,33 +244,28 @@ namespace WeatherBotService
                     case Season.Autumn:
                         if (timeRoll >= 1 && timeRoll <= 20)
                         {
-                            array = new JArray(_weatherSet["autumn"]["any_time"]);
-                            selection = array[random.Next(0, array.Count)].ToString();
-                            Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                            array = (JArray) _weatherSet["autumn"]["any_time"];
+                            Effect = array[random.Next(0, array.Count)].ToString();
                         }
                         else
                         {
                             switch (phase)
                             {
                                 case Phase.Dawn:
-                                    array = new JArray(_weatherSet["autumn"]["dawn"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["autumn"]["dawn"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Day:
-                                    array = new JArray(_weatherSet["autumn"]["day"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["autumn"]["day"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Dusk:
-                                    array = new JArray(_weatherSet["autumn"]["dusk"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["autumn"]["dusk"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 case Phase.Night:
-                                    array = new JArray(_weatherSet["autumn"]["night"]);
-                                    selection = array[random.Next(0, array.Count)].ToString();
-                                    Effect = selection.Remove(selection.Length - 3).Substring(3).Trim().TrimEnd('"').TrimStart('"');
+                                    array = (JArray) _weatherSet["autumn"]["night"];
+                                    Effect = array[random.Next(0, array.Count)].ToString();
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(phase), phase, null);
