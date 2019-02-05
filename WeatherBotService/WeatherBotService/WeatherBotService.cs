@@ -23,6 +23,8 @@ namespace WeatherBotService
         private static RedditUpdateEngine _updateEngine;
         /// <summary><see cref="WeatherGenerator"/> used to create update strings.</summary>
         private WeatherGenerator _currentWeather;
+        /// <summary>Used to determine which hours the weather will update.</summary>
+        private readonly int[] _updateTriggers = {1, 6, 7, 13, 18, 20};
 
         /// <inheritdoc />
         public WeatherBotService()
@@ -79,9 +81,11 @@ namespace WeatherBotService
                 }
             }
 
+            var now = DateTime.UtcNow;
+
             // Initialize the DateTime fields to their minimums.
-            _timeOfLastWeatherChange = DateTime.UtcNow;
-            _timeOfLastToken = DateTime.UtcNow;
+            _timeOfLastWeatherChange = now;
+            _timeOfLastToken = now;
 
             // Initialize the bearer token in _updateEngine
             Log.Write("Initializing bearer token.");
@@ -90,7 +94,7 @@ namespace WeatherBotService
             // Initialize the weather field.
             Log.Write("Initializing weather pattern.");
             _currentWeather = new WeatherGenerator();
-            _currentWeather.GenerateWeather();
+            _currentWeather.GenerateWeather(now);
 
             // Perform initial post.
             var updateString = BuildPostContent(_currentWeather.Effect);
@@ -113,8 +117,10 @@ namespace WeatherBotService
         /// <param name="e">Additional arguments from the raised event.</param>
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
+            var now = DateTime.UtcNow;
+
             // If the last bearer token was acquired an hour or more ago, get a new token.
-            if ((int)(DateTime.UtcNow - _timeOfLastToken).TotalHours >= 1)
+            if ((int)(now - _timeOfLastToken).TotalHours >= 1)
             {
                 Log.Write("Refreshing bearer token.");
 
@@ -128,37 +134,48 @@ namespace WeatherBotService
                 }
 
                 // Record the time the bearer token was refreshed.
-                _timeOfLastToken = DateTime.UtcNow;
+                _timeOfLastToken = now;
             }
 
-            // If the weather hasn't been changed in six hours, generate a new pattern and store it in _currentWeather.
-            if ((int)(DateTime.UtcNow - _timeOfLastWeatherChange).TotalHours >= 6)
+            // Check the current time and see if the hour matches any triggers
+            // in _updateTriggers. If it does, update the weather.
+            var change = false;
+            foreach (var i in _updateTriggers)
             {
-                // Dispose the old object.
-                _currentWeather.Dispose();
-
-                // Log time.
-                Log.Write("Weather Updated");
-
-                // Instantiate a new WeatherGenerator and generate an effect string.
-                _currentWeather = new WeatherGenerator();
-                _currentWeather.GenerateWeather();
-
-                // Record the time the weather was updated.
-                _timeOfLastWeatherChange = DateTime.UtcNow;
+                if (now.Hour == i && _timeOfLastWeatherChange.Hour != i)
+                    change = true;
             }
+            if (change)
+                UpdateWeather(now);
 
             // Post an update with _currentWeather.
             var updateString = BuildPostContent(_currentWeather.Effect);
             try
             {
-                Log.Write("Posting update.");
+                // Log.Write("Posting update."); // verbose, enable if desired
                 _updateEngine.PostUpdate(updateString);
             }
             catch (Exception exception)
             {
                 Log.Write($"An error occurred while posting the update: {exception.Message}");
             }
+        }
+
+        // Updates the current weather description
+        private void UpdateWeather(DateTime time)
+        {
+            // Dispose the old object.
+            _currentWeather.Dispose();
+
+            // Log time.
+            Log.Write("Weather Updated");
+
+            // Instantiate a new WeatherGenerator and generate an effect string.
+            _currentWeather = new WeatherGenerator();
+            _currentWeather.GenerateWeather(time);
+
+            // Record the time the weather was updated.
+            _timeOfLastWeatherChange = time;
         }
 
         // Inherited method for actions to take when the service is stopped.

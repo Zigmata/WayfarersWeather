@@ -43,26 +43,22 @@ namespace WeatherBotService
         {
             var hour = dateTime.Hour;
 
-            // --- Comment this section when dawn/dusk is implemented ---
-            if (hour < 6 || hour > 19)
-                return Phase.Night;
-            
-            return Phase.Day;
-            // --- End section ---
-            
-            // Uncomment when bot evolves to had dawn/dusk specific time settings as well
-            // This was removed for now due to the bot being on a static 6-hour cycle,
-            // preventing these phases from being reached.
-
-            //if (hour < 7 || hour > 21)
+            //// --- Comment this section when dawn/dusk is implemented ---
+            //if (hour < 6 || hour > 19)
             //    return Phase.Night;
-            //if (hour == 7)
-            //    return Phase.Dawn;
-            //if (hour > 7 && hour < 21)
-            //    return Phase.Day;
-            //if (hour == 21)
-            //    return Phase.Dusk;
-            //throw new ArgumentOutOfRangeException(nameof(hour), hour, @"Incorrect time reported.");
+
+            //return Phase.Day;
+            //// --- End section ---
+
+            if (hour < 6 || hour >= 20)
+                return Phase.Night;
+            if (hour == 6)
+                return Phase.Dawn;
+            if (hour >= 7 && hour < 18)
+                return Phase.Day;
+            if (hour == 18 || hour == 19)
+                return Phase.Dusk;
+            throw new ArgumentOutOfRangeException(nameof(hour), hour, @"Incorrect time reported.");
         }
 
         // Set the season for the weather.
@@ -91,12 +87,10 @@ namespace WeatherBotService
         /// <summary>
         /// Randomly generates a new weather effect.
         /// </summary>
-        public void GenerateWeather()
+        public void GenerateWeather(DateTime time)
         {
-            var dateTime = DateTime.UtcNow;
-
-            var phase = SetPhase(dateTime);
-            var season = SetSeason(dateTime);
+            var phase = SetPhase(time);
+            var season = SetSeason(time);
 
             var random = new Random();
             var seasonRoll = random.Next(1, 101);
