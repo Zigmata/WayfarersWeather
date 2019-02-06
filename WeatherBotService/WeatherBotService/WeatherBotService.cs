@@ -83,18 +83,13 @@ namespace WeatherBotService
 
             var now = DateTime.UtcNow;
 
-            // Initialize the DateTime fields to their minimums.
-            _timeOfLastWeatherChange = now;
-            _timeOfLastToken = now;
-
             // Initialize the bearer token in _updateEngine
             Log.Write("Initializing bearer token.");
-            _updateEngine.GetNewAccessToken();
+            UpdateToken(now);
 
             // Initialize the weather field.
             Log.Write("Initializing weather pattern.");
-            _currentWeather = new WeatherGenerator();
-            _currentWeather.GenerateWeather(now);
+            UpdateWeather(now);
 
             // Perform initial post.
             var updateString = BuildPostContent(_currentWeather.Effect);
@@ -122,23 +117,11 @@ namespace WeatherBotService
             // If the last bearer token was acquired an hour or more ago, get a new token.
             if ((int)(now - _timeOfLastToken).TotalHours >= 1)
             {
-                Log.Write("Refreshing bearer token.");
-
-                try
-                {
-                    _updateEngine.GetNewAccessToken();
-                }
-                catch (Exception exception)
-                {
-                    Log.Write($"Error acquiring access token: {exception.Message}");
-                }
-
-                // Record the time the bearer token was refreshed.
-                _timeOfLastToken = now;
+                UpdateToken(now);
             }
 
-            // Check the current time and see if the hour matches any triggers
-            // in _updateTriggers. If it does, update the weather.
+            // Check the current time and see if the hour matches any triggers in
+            // _updateTriggers. If it does, and the weather hasn't been updated, update it.
             var change = false;
             foreach (var i in _updateTriggers)
             {
@@ -161,11 +144,29 @@ namespace WeatherBotService
             }
         }
 
+        // Updates the stored bearer token in _updateEngine
+        private void UpdateToken(DateTime time)
+        {
+            Log.Write("Refreshing bearer token.");
+
+            try
+            {
+                _updateEngine.GetNewAccessToken();
+            }
+            catch (Exception exception)
+            {
+                Log.Write($"Error acquiring access token: {exception.Message}");
+            }
+
+            // Record the time the bearer token was refreshed.
+            _timeOfLastToken = time;
+        }
+
         // Updates the current weather description
         private void UpdateWeather(DateTime time)
         {
             // Dispose the old object.
-            _currentWeather.Dispose();
+            _currentWeather?.Dispose();
 
             // Log time.
             Log.Write("Weather Updated");
