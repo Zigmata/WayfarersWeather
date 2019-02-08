@@ -96,11 +96,11 @@ namespace WeatherBotService
             var seasonRoll = random.Next(1, 101);
             var timeRoll = random.Next(1, 101);
             
-            if (seasonRoll >= 1 && seasonRoll <= 25) // 25% chance of generic weather with regards to season
+            if (seasonRoll <= 25) // 25% chance of generic weather with regards to season
             {
                 JArray array;
 
-                if (timeRoll >= 1 && timeRoll <= 25) // 25% chance of generic weather with regards to time of day
+                if (timeRoll <= 25) // 25% chance of generic weather with regards to time of day
                 {
                     // Create an array out of the JSON string for the appropriate season/phase.
                     array = (JArray) _weatherSet["any_season"]["any_time"];
